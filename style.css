@@ -1,0 +1,131 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #201b2d;
+}
+
+.container {
+  display: inline-block;
+  text-align: center;
+}
+
+.logo img{
+  width: 80px;
+  height: 80px;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+h1, p {
+  color: #ffffff;
+}
+
+.wrapper {
+  width: 80vmin;
+  height: 80vmin;
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 5px;
+  background: #15121e;
+  box-shadow: 25px 25px 20px 0px rgba(120,100,150,0.1);
+  margin-top: 10px;
+}
+
+.game-details {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 1.2rem;
+  padding: 20px 27px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.play-board {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  background: #191622;
+  grid-template: repeat(30, 1fr) / repeat(30, 1fr);
+}
+
+.play-board .food {
+  background: #FF003D;
+}
+
+.play-board .head {
+  background: #3fc459;
+}
+
+.controls {
+  display: none;
+  justify-content: space-between;
+}
+
+.controls i {
+  padding: 25px 0;
+  text-align: center;
+  font-size: 1.3rem;
+  color: #B8C6DC;
+  width: calc(100% / 4);
+  cursor: pointer;
+  border-right: 1px solid #171B26;
+}
+
+.high-score {
+  animation: rgb 6s linear 0s infinite;
+}
+
+@keyframes rgb {
+  0% {color: #6666ff;}
+  10% {color: #0099ff;}
+  50% {color: #00ff00;}
+  75% {color: #ff3399;}
+  100% {color: #6666ff;}
+}
+
+@media screen and (max-width: 800px) {
+  .wrapper {
+    width: 90vmin;
+    height: 115vmin;
+  }
+
+  .game-details {
+    font-size: 1rem;
+    padding: 15px 27px;
+  }
+
+  .controls {
+    display: flex;
+  }
+
+  .controls i {
+    padding: 15px 0;
+    font-size: 1rem;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .logo img {
+    display: inline-block;
+    position: relative;
+    margin-bottom: 10px;
+    width: 60px;
+    height: 60px;
+  }
+}
