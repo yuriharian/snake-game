@@ -1,88 +1,218 @@
-const playBoard = document.querySelector(".play-board");
-const scoreElement = document.querySelector(".score");
-const highScoreElement = document.querySelector(".high-score");
-const controls = document.querySelectorAll(".controls i");
+const canvas = document.getElementById("snake-canvas");
+const ctx = canvas.getContext("2d");
+const scoreEl = document.getElementById("score");
+const highScoreEl = document.getElementById("high-score");
+const controls = document.querySelectorAll(".snake-controls button");
+const volumeBtn = document.getElementById("volume-btn");
+const volumeSlider = document.getElementById("volume-slider");
+const audio = new Audio("assets/audio.mp3");
 
-const audio = new Audio("assets/audio.mp3")
+const theme = {
+  bg: "#191622",
+  snake: "#3fc459",
+  food: "#FF003D",
+  border: "#fff",
+};
+const grid = 24;
+const size = 20;
+let snake, dir, nextDir, food, score, highScore, gameOver, speed, muted;
 
-let gameOver = false;
-let foodX, foodY;
-let snakeX = 5, snakeY = 5;
-let speedX = 0, speedY = 0;
-let snakeBody = [];
-let setIntervalId;
-let score = 0;
-
-let highScore = localStorage.getItem("high-score") || 0;
-highScoreElement.innerText = `Pontuação Máxima: ${highScore}`;
-
-const updateFoodPosition = () => {
-    foodX = Math.floor(Math.random() * 30) + 1;
-    foodY = Math.floor(Math.random() * 30) + 1;
+function initGame() {
+  snake = [{ x: 10, y: 10 }];
+  dir = { x: 0, y: 0 };
+  nextDir = { x: 0, y: 0 };
+  food = spawnFood();
+  score = 0;
+  highScore = parseInt(localStorage.getItem("high-score")) || 0;
+  gameOver = false;
+  speed = 10;
+  muted = false;
+  updateScore();
 }
 
-const handleGameOver = () => {
-    clearInterval(setIntervalId);
-    alert("Game Over! Aperte em OK para reiniciar...");
-    location.reload();
+function spawnFood() {
+  let pos;
+  do {
+    pos = {
+      x: Math.floor(Math.random() * size),
+      y: Math.floor(Math.random() * size),
+    };
+  } while (snake && snake.some((s) => s.x === pos.x && s.y === pos.y));
+  return pos;
 }
 
-const changeDirection = e => {
-    if(e.key === "ArrowUp" && speedY != 1) {
-        speedX = 0;
-        speedY = -1;
-    } else if(e.key === "ArrowDown" && speedY != -1) {
-        speedX = 0;
-        speedY = 1;
-    } else if(e.key === "ArrowLeft" && speedX != 1) {
-        speedX = -1;
-        speedY = 0;
-    } else if(e.key === "ArrowRight" && speedX != -1) {
-        speedX = 1;
-        speedY = 0;
+function draw() {
+  ctx.fillStyle = theme.bg;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // Food
+  ctx.fillStyle = theme.food;
+  ctx.beginPath();
+  ctx.arc(
+    food.x * grid + grid / 2,
+    food.y * grid + grid / 2,
+    grid / 2.5,
+    0,
+    2 * Math.PI
+  );
+  ctx.fill();
+  // Snake
+  ctx.fillStyle = theme.snake;
+  snake.forEach((s, i) => {
+    ctx.beginPath();
+    ctx.arc(
+      s.x * grid + grid / 2,
+      s.y * grid + grid / 2,
+      grid / 2.2,
+      0,
+      2 * Math.PI
+    );
+    ctx.fill();
+    if (i === 0) {
+      ctx.strokeStyle = theme.border;
+      ctx.lineWidth = 2;
+      ctx.stroke();
     }
+  });
 }
 
-controls.forEach(button => button.addEventListener("click", () => changeDirection({ key: button.dataset.key })));
-
-const initGame = () => {
-    if(gameOver) return handleGameOver();
-    let html = `<div class="food" style="grid-area: ${foodY} / ${foodX}"></div>`;
-
-    if(snakeX === foodX && snakeY === foodY) {
-        updateFoodPosition();
-        snakeBody.push([foodY, foodX]);
-        audio.play()
-        score++;
-        highScore = score >= highScore ? score : highScore;
-        localStorage.setItem("high-score", highScore);
-        scoreElement.innerText = `Pontuação: ${score}`;
-        highScoreElement.innerText = `Pontuação Máxima: ${highScore}`;
-    }
-
-    snakeX += speedX;
-    snakeY += speedY;
-    
-    for (let i = snakeBody.length - 1; i > 0; i--) {
-        snakeBody[i] = snakeBody[i - 1];
-    }
-    snakeBody[0] = [snakeX, snakeY];
-
-    if(snakeX <= 0 || snakeX > 30 || snakeY <= 0 || snakeY > 30) {
-        return gameOver = true;
-    }
-
-    for (let i = 0; i < snakeBody.length; i++) {
-        html += `<div class="head" style="grid-area: ${snakeBody[i][1]} / ${snakeBody[i][0]}"></div>`;
-
-        if (i !== 0 && snakeBody[0][1] === snakeBody[i][1] && snakeBody[0][0] === snakeBody[i][0]) {
-            gameOver = true;
-        }
-    }
-    
-    playBoard.innerHTML = html;
+function updateScore() {
+  scoreEl.textContent = `Pontuação: ${score}`;
+  highScoreEl.textContent = `Máxima: ${highScore}`;
 }
 
-updateFoodPosition();
-setIntervalId = setInterval(initGame, 100);
-document.addEventListener("keyup", changeDirection);
+function move() {
+  if (gameOver || (dir.x === 0 && dir.y === 0)) return;
+  dir = { ...nextDir };
+  const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+  // Wall
+  if (head.x < 0 || head.x >= size || head.y < 0 || head.y >= size)
+    return end();
+  // Self
+  if (snake.some((s, i) => i && s.x === head.x && s.y === head.y)) return end();
+  snake.unshift(head);
+  // Eat
+  if (head.x === food.x && head.y === food.y) {
+    score++;
+    if (!muted) {
+      audio.currentTime = 0;
+      audio.play();
+    }
+    if (score > highScore) {
+      highScore = score;
+      localStorage.setItem("high-score", highScore);
+    }
+    food = spawnFood();
+  } else {
+    snake.pop();
+  }
+  updateScore();
+}
+
+function end() {
+  gameOver = true;
+  setTimeout(() => {
+    alert("Game Over! Clique em OK para reiniciar.");
+    initGame();
+  }, 100);
+}
+
+function gameLoop() {
+  move();
+  draw();
+}
+
+// Controls
+function setDir(key) {
+  if (gameOver) return;
+  let d = dir;
+  // Aceita WASD e setas
+  const up = key === "ArrowUp" || key === "w" || key === "W";
+  const down = key === "ArrowDown" || key === "s" || key === "S";
+  const left = key === "ArrowLeft" || key === "a" || key === "A";
+  const right = key === "ArrowRight" || key === "d" || key === "D";
+  if (d.x === 0 && d.y === 0) {
+    if (up) d = { x: 0, y: -1 };
+    if (down) d = { x: 0, y: 1 };
+    if (left) d = { x: -1, y: 0 };
+    if (right) d = { x: 1, y: 0 };
+    dir = nextDir = d;
+    return;
+  }
+  if (up && d.y !== 1) nextDir = { x: 0, y: -1 };
+  if (down && d.y !== -1) nextDir = { x: 0, y: 1 };
+  if (left && d.x !== 1) nextDir = { x: -1, y: 0 };
+  if (right && d.x !== -1) nextDir = { x: 1, y: 0 };
+}
+
+document.addEventListener("keydown", (e) => setDir(e.key));
+controls.forEach((btn) =>
+  btn.addEventListener("click", () => setDir(btn.dataset.key))
+);
+
+// Swipe
+let swipeStart = null;
+canvas.addEventListener("touchstart", (e) => {
+  if (e.touches.length !== 1) return;
+  const t = e.touches[0];
+  swipeStart = { x: t.clientX, y: t.clientY };
+});
+canvas.addEventListener(
+  "touchmove",
+  (e) => {
+    // Previne scroll durante o swipe
+    e.preventDefault();
+  },
+  { passive: false }
+);
+canvas.addEventListener("touchend", (e) => {
+  if (!swipeStart) return;
+  const t = e.changedTouches[0];
+  const dx = t.clientX - swipeStart.x;
+  const dy = t.clientY - swipeStart.y;
+  // Só reconhece swipe se movimento for suficiente
+  if (Math.abs(dx) < 30 && Math.abs(dy) < 30) {
+    swipeStart = null;
+    return;
+  }
+  if (Math.abs(dx) > Math.abs(dy)) {
+    if (dx > 30) setDir("ArrowRight");
+    else if (dx < -30) setDir("ArrowLeft");
+  } else {
+    if (dy > 30) setDir("ArrowDown");
+    else if (dy < -30) setDir("ArrowUp");
+  }
+  swipeStart = null;
+});
+
+// Volume
+function updateVolumeIcon() {
+  volumeBtn.textContent = muted || audio.volume === 0 ? "🔇" : "🔊";
+}
+volumeBtn.addEventListener("click", () => {
+  muted = !muted;
+  audio.muted = muted;
+  updateVolumeIcon();
+});
+volumeSlider.addEventListener("input", () => {
+  audio.volume = Number(volumeSlider.value);
+  muted = audio.volume === 0;
+  audio.muted = muted;
+  updateVolumeIcon();
+});
+audio.volume = Number(volumeSlider.value);
+updateVolumeIcon();
+
+// Loop
+let last = 0;
+function loop(ts) {
+  if (!last) last = ts;
+  if (ts - last > 1000 / speed) {
+    gameLoop();
+    last = ts;
+  }
+  requestAnimationFrame(loop);
+}
+
+initGame();
+
+requestAnimationFrame(loop);

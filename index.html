@@ -1,35 +1,57 @@
 <!DOCTYPE html>
 <html lang="pt-br">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>Jogo da Cobrinha</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="assets/YH_800x800.png" />
+    <link rel="stylesheet" href="style.css" />
     <script src="script.js" defer></script>
   </head>
   <body>
-    <div class="container">
-        <div class="logo">
-            <a href="https://github.com/yuriharian" target="_blank" alt="github"><img src="assets/YH_800x800.png"/></a>
-        </div><!--logo-->
-
+    <main class="snake-main">
+      <header class="snake-header">
+        <img src="assets/YH_800x800.png" alt="Logo" class="logo" />
         <h1>Jogo da Cobrinha</h1>
-        <p>Utilize as <span style="font-weight: bolder;">setas</span> para jogar!</p>
-
-        <div class="wrapper">
-            <div class="game-details">
-                <span class="score">Pontuação: 0</span>
-                <span class="high-score">Pontuação Máxima: 0</span>
-            </div><!--game-details-->
-            <div class="play-board"></div>
-            <div class="controls">
-                <i data-key="ArrowLeft" class="fa-solid fa-arrow-left-long"></i>
-                <i data-key="ArrowDown" class="fa-solid fa-arrow-down-long"></i>
-                <i data-key="ArrowUp" class="fa-solid fa-arrow-up-long"></i>
-                <i data-key="ArrowRight" class="fa-solid fa-arrow-right-long"></i>
-            </div><!--controls-->
-        </div><!--wrapper-->
-    </div><!--container-->
+        <p>Use WASD ou botões para jogar!</p>
+      </header>
+      <section class="snake-game-area">
+        <div class="snake-score-panel">
+          <span id="score">Pontuação: 0</span>
+          <span id="high-score">Máxima: 0</span>
+          <button
+            id="volume-btn"
+            title="Ativar/desativar som"
+            aria-label="Volume"
+            class="volume-btn"
+          >
+            🔊
+          </button>
+          <input
+            type="range"
+            id="volume-slider"
+            min="0"
+            max="1"
+            step="0.01"
+            value="1"
+            title="Volume"
+            aria-label="Volume"
+            class="volume-slider"
+          />
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="snake-canvas" width="480" height="480"></canvas>
+        </div>
+        <div class="snake-controls">
+          <button data-key="ArrowUp">▲</button>
+          <button data-key="ArrowLeft">◀</button>
+          <button data-key="ArrowDown">▼</button>
+          <button data-key="ArrowRight">▶</button>
+        </div>
+      </section>
+      <footer class="snake-footer">
+        <a href="https://github.com/yuriharian" target="_blank">GitHub</a>
+      </footer>
+    </main>
   </body>
 </html>
