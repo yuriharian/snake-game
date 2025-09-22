@@ -1,91 +1,47 @@
 <!DOCTYPE html>
-
-<html lang="pt-br">        <h1>Jogo da Cobrinha</h1>
-
-  <head>        <p>Use WASD ou botões para jogar!</p>
-
-    <meta charset="utf-8" />      </header>
-
-    <title>Jogo da Cobrinha</title>      <section class="snake-game-area">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />        <div class="snake-score-panel">
-
-    <link rel="icon" type="image/png" href="assets/YH_800x800.png" />          <span id="score">Pontuação: 0</span>
-
-    <link rel="stylesheet" href="style.css" />          <span id="high-score">Máxima: 0</span>
-
-    <script src="script.js" defer></script>          <button
-
-  </head>            id="volume-btn"
-
-  <body>            title="Ativar/desativar som"
-
-    <main class="snake-main">            aria-label="Volume"
-
-      <header class="snake-header">            class="volume-btn"
-
-        <img src="assets/YH_800x800.png" alt="Logo" class="logo" />          >
-
-        <h1>Jogo da Cobrinha</h1>            🔊
-
-        <p>Use WASD, setas, botões ou deslize para jogar!</p>          </button>
-
-      </header>          <input
-
-      <section class="snake-game-area">            type="range"
-
-        <div class="snake-score-panel">            id="volume-slider"
-
-          <span id="score">Pontuação: 0</span>            min="0"
-
-          <span id="high-score">Máxima: 0</span>            max="1"
-
-          <button            step="0.01"
-
-            id="volume-btn"            value="1"
-
-            title="Ativar/desativar som"            title="Volume"
-
-            aria-label="Volume"            aria-label="Volume"
-
-            class="volume-btn"            class="volume-slider"
-
-          >          />
-
-            🔊        </div>
-
-          </button>        <div class="canvas-wrapper">
-
-          <input          <canvas id="snake-canvas" width="480" height="480"></canvas>
-
-            type="range"        </div>
-
-            id="volume-slider"        <div class="snake-controls">
-
-            min="0"          <button data-key="ArrowUp">▲</button>
-
-            max="1"          <button data-key="ArrowLeft">◀</button>
-
-            step="0.01"          <button data-key="ArrowDown">▼</button>
-
-            value="1"          <button data-key="ArrowRight">▶</button>
-
-            title="Volume"        </div>
-
-            aria-label="Volume"      </section>
-
-            class="volume-slider"      <footer class="snake-footer">
-
-          />        <a href="https://github.com/yuriharian" target="_blank">GitHub</a>
-
-        </div>      </footer>
-
-        <div class="canvas-wrapper">    </main>
-
-          <canvas id="snake-canvas" width="480" height="480"></canvas>  </body>
-
-        </div></html>
-
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <title>Jogo da Cobrinha</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="assets/YH_800x800.png" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <main class="snake-main">
+      <header class="snake-header">
+        <img src="assets/YH_800x800.png" alt="Logo" class="logo" />
+        <h1>Jogo da Cobrinha</h1>
+        <p>Use WASD ou botões para jogar!</p>
+      </header>
+      <section class="snake-game-area">
+        <div class="snake-score-panel">
+          <span id="score">Pontuação: 0</span>
+          <span id="high-score">Máxima: 0</span>
+          <button
+            id="volume-btn"
+            title="Ativar/desativar som"
+            aria-label="Volume"
+            class="volume-btn"
+          >
+            🔊
+          </button>
+          <input
+            type="range"
+            id="volume-slider"
+            min="0"
+            max="1"
+            step="0.01"
+            value="1"
+            title="Volume"
+            aria-label="Volume"
+            class="volume-slider"
+          />
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="snake-canvas" width="480" height="480"></canvas>
+        </div>
         <div class="snake-controls">
           <button data-key="ArrowUp">▲</button>
           <button data-key="ArrowLeft">◀</button>
